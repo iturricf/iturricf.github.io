@@ -2,12 +2,63 @@ console.log('Loaded.');
 
 readState();
 
-let sortable = Sortable.create(getContainer(), {
-    animation: 250,
-    onEnd: function (e) {
-        saveState();
-    }
+// Avoid markers issue when dropping | cancelling drop elements outside element container
+document.addEventListener('dragend', function (e) {
+    e.preventDefault();
+    removeMarkers();
 });
+
+function addItem(e) {
+    e.preventDefault();
+
+    let el = document.createElement('div');
+
+    el.className = 'item';
+    el.id = `div${elementsCount() + 1}`;
+    el.innerHTML = `Div #${elementsCount() + 1}`;
+    el.setAttribute('draggable', 'true');
+    el.setAttribute('ondragstart', 'drag(event)');
+    el.setAttribute('ondragenter', 'dragEnter(event)');
+
+    getContainer().appendChild(el);
+
+    saveState();
+}
+
+function drag(e) {
+    e.dataTransfer.setData('text/plain', e.target.id);
+}
+
+function drop(e) {
+    e.preventDefault();
+
+    const id = e.dataTransfer.getData('text/plain');
+    const el = document.getElementById(id);
+
+    const marker = findMarker();
+
+    if (marker) {
+        getContainer().replaceChild(el, marker);
+    } else {
+        getContainer().appendChild(el);
+    }
+
+    saveState();
+
+    removeMarkers();
+}
+
+function dragEnter(e) {
+    // Remove existing markers as markers are not removed on dragleave
+    removeMarkers();
+
+    // Insert marker
+    insertMarker(e.target);
+}
+
+function enableDrop(e) {
+    e.preventDefault();
+}
 
 function readState() {
     const items = window.localStorage.getItem('items');
@@ -21,6 +72,8 @@ function readState() {
 
     let container = document.createElement('div');
     container.className = 'items';
+    container.setAttribute('ondragover', 'enableDrop(event)');
+    container.setAttribute('ondrop', 'drop(event)');
 
     for (const item in parsedItems) {
         let el = unserializeElement(parsedItems[item]);
@@ -70,20 +123,6 @@ function unserializeElement(object) {
     return el;
 }
 
-function addItem(e) {
-    e.preventDefault();
-
-    let el = document.createElement('div');
-
-    el.className = 'item';
-    el.id = `div${elementsCount() + 1}`;
-    el.innerHTML = `Div #${elementsCount() + 1}`;
-
-    getContainer().appendChild(el);
-
-    saveState();
-}
-
 function elementsCount() {
     return getElements(getContainer()).length;
 }
@@ -100,4 +139,25 @@ function getContainer() {
     }
 
     return container[0];
+}
+
+function findMarker() {
+    const markers = getContainer().getElementsByClassName('marker');
+
+    return markers[0] || false;
+}
+
+function insertMarker(target) {
+    let marker = document.createElement('span');
+    marker.className = 'marker';
+
+    getContainer().insertBefore(marker, target);
+}
+
+function removeMarkers() {
+    let markers = getContainer().getElementsByClassName('marker');
+
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].remove();
+    }
 }
