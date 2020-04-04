@@ -2,6 +2,13 @@ console.log('Loaded.');
 
 readState();
 
+let sortable = Sortable.create(getContainer(), {
+    animation: 250,
+    onEnd: function (e) {
+        saveState();
+    }
+});
+
 function readState() {
     const items = window.localStorage.getItem('items');
 
@@ -14,8 +21,6 @@ function readState() {
 
     let container = document.createElement('div');
     container.className = 'items';
-    container.setAttribute('ondragover', 'enableDrop(event)');
-    container.setAttribute('ondrop', 'drop(event)');
 
     for (const item in parsedItems) {
         let el = unserializeElement(parsedItems[item]);
@@ -73,8 +78,6 @@ function addItem(e) {
     el.className = 'item';
     el.id = `div${elementsCount() + 1}`;
     el.innerHTML = `Div #${elementsCount() + 1}`;
-    el.setAttribute('draggable', 'true');
-    el.setAttribute('ondragstart', 'drag(event)');
 
     getContainer().appendChild(el);
 
