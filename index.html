@@ -21,12 +21,12 @@
   </head>
 
   <body>
-    <div class="items">
-      <div class="item" id="div1">Div #1</div>
-      <div class="item" id="div2">Div #2</div>
-      <div class="item" id="div3">Div #3</div>
-      <div class="item" id="div4">Div #4</div>
-      <div class="item" id="div5">Div #5</div>
+    <div class="items" ondragover="enableDrop(event)" ondrop="drop(event)">
+      <div class="item" id="div1" draggable="true" ondragstart="drag(event)">Div #1</div>
+      <div class="item" id="div2" draggable="true" ondragstart="drag(event)">Div #2</div>
+      <div class="item" id="div3" draggable="true" ondragstart="drag(event)">Div #3</div>
+      <div class="item" id="div4" draggable="true" ondragstart="drag(event)">Div #4</div>
+      <div class="item" id="div5" draggable="true" ondragstart="drag(event)">Div #5</div>
     </div>
 
     <div class="actions">
