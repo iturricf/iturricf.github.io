@@ -56,3 +56,10 @@ Then I switched to VanillaJS and implemented sortable drag-and-drop elements wit
 
 1. See code with [SortableJS](https://github.com/iturricf/drag-and-drop/commits/with-sortable-js)
 2. See [VanillaJS](https://github.com/iturricf/drag-and-drop/commits/master) impl.
+
+## Install & Usage
+
+1. Clone repo: `git clone git@github.com:iturricf/iturricf.github.io.git`
+2. `cd iturricf.github.io`
+2. Run `npm install`
+3. Run `npx ws`

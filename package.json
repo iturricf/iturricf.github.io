@@ -1,0 +1,9 @@
+{
+  "name": "drag-and-drop-challenge",
+  "scripts": {
+    "start": "npx ws"
+  },
+  "dependencies": {
+    "local-web-server": "^4.0.0"
+  }
+}
