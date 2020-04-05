@@ -54,8 +54,8 @@ First approach using SortableJS wich enables support for mobile devices.
 
 Then I switched to VanillaJS and implemented sortable drag-and-drop elements with some styling improvements. Added mobile support by using an HTML5 Drag-and-drop [polyfill](https://github.com/Bernardo-Castilho/dragdroptouch).
 
-1. See code with [SortableJS](https://github.com/iturricf/drag-and-drop/commits/with-sortable-js)
-2. See [VanillaJS](https://github.com/iturricf/drag-and-drop/commits/master) impl.
+1. See code with [SortableJS](https://github.com/iturricf/iturricf.github.io/commits/with-sortable-js)
+2. See [VanillaJS](https://github.com/iturricf/iturricf.github.io/commits/master) impl.
 
 ## Install & Usage
 
@@ -63,3 +63,7 @@ Then I switched to VanillaJS and implemented sortable drag-and-drop elements wit
 2. `cd iturricf.github.io`
 2. Run `npm install`
 3. Run `npm run start`
+
+## Demo
+
+See demo [here](https://iturricf.github.io/).
