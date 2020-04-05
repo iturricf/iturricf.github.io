@@ -26,7 +26,7 @@ function addItem(e) {
     el.id = `div${elementsCount() + 1}`;
     el.innerHTML = `Div #${elementsCount() + 1}`;
     el.setAttribute('draggable', 'true');
-    
+
     setElementListeners(el);
     getContainer().appendChild(el);
     saveState();
@@ -171,7 +171,7 @@ function insertMarker(target) {
     } else {
         getContainer().insertBefore(marker, target);
     }
-    
+
 }
 
 function removeMarkers() {
