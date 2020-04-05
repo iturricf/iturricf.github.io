@@ -1,4 +1,4 @@
-# DaD Challenge
+# DnD Challenge
 
 Simple drag-and-drop challenge implemented with both, VanillaJS and [sortableJS](https://sortablejs.github.io/Sortable/) lib.
 

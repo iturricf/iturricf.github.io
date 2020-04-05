@@ -17,21 +17,6 @@ document.addEventListener('dragend', function (e) {
 // Start tracking mouse direction from the beginning for a smooth drag experience
 document.addEventListener('mousemove', throttle(150, calcMouseDirection));
 
-function addItem(e) {
-    e.preventDefault();
-
-    let el = document.createElement('div');
-
-    el.className = 'item';
-    el.id = `div${elementsCount() + 1}`;
-    el.innerHTML = `Div #${elementsCount() + 1}`;
-    el.setAttribute('draggable', 'true');
-
-    setElementListeners(el);
-    getContainer().appendChild(el);
-    saveState();
-}
-
 function drag(e) {
     e.dataTransfer.setData('text/plain', e.target.id);
 }
@@ -66,6 +51,29 @@ function containerDragOver(e) {
     calcMouseDirection(e);
 }
 
+/**
+ * 'Add' button handler. Creates new element, add proper attributes and listeners,
+ * appends it to the container and saves app state
+ */
+function addItem(e) {
+    e.preventDefault();
+
+    let el = document.createElement('div');
+
+    el.className = 'item';
+    el.id = `div${elementsCount() + 1}`;
+    el.innerHTML = `Div #${elementsCount() + 1}`;
+    el.setAttribute('draggable', 'true');
+
+    setElementListeners(el);
+    getContainer().appendChild(el);
+    saveState();
+}
+
+/**
+ * Check saved app state and loads it if exists. Otherwise it will iterate over current
+ * DOM elements and initialize them with proper event listeners
+ */
 function readState() {
     const items = window.localStorage.getItem('items');
 
@@ -98,6 +106,10 @@ function readState() {
     oldContainer.parentNode.replaceChild(container, oldContainer);
 }
 
+/**
+ * Saves current app state into local storage. Iterates over all elements in the container,
+ * serialize them into a json object and then saves that into local storage.
+ */
 function saveState() {
     let elements = getElements(getContainer());
 
@@ -110,6 +122,9 @@ function saveState() {
     window.localStorage.setItem('items', JSON.stringify(container));
 }
 
+/**
+ * Converts DOM element into object that will then be converted to string
+ */
 function serializeElement(el) {
     let object = {};
     object.tagName = el.tagName;
@@ -122,6 +137,9 @@ function serializeElement(el) {
     return object;
 }
 
+/**
+ * Converts an object back to an DOM element
+ */
 function unserializeElement(object) {
     let el = document.createElement(object.tagName);
     el.innerHTML = object.innerHTML;
@@ -208,10 +226,11 @@ function calcMouseDirection(e) {
     } else if (diff < 0) {
         mouseDir = DIR_UP;
     }
-
-    console.log(mouseDir);
 }
 
+/**
+ * Allow event handler calls to be throttled depending on delay value in ms
+ */
 function throttle(delay, handler) {
     let lastCall = 0;
 
