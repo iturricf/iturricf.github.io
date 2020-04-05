@@ -1,5 +1,11 @@
 console.log('Loaded.');
 
+const DIR_UP = 'UP';
+const DIR_DOWN = 'DOWN';
+
+var mouseYValue = 0;
+var mouseDir = DIR_DOWN;
+
 readState();
 
 // Avoid markers issue when dropping | cancelling drop elements outside element container
@@ -7,6 +13,9 @@ document.addEventListener('dragend', function (e) {
     e.preventDefault();
     removeMarkers();
 });
+
+// Start tracking mouse direction from the beginning for a smooth drag experience
+document.addEventListener('mousemove', throttle(150, calcMouseDirection));
 
 function addItem(e) {
     e.preventDefault();
@@ -17,11 +26,9 @@ function addItem(e) {
     el.id = `div${elementsCount() + 1}`;
     el.innerHTML = `Div #${elementsCount() + 1}`;
     el.setAttribute('draggable', 'true');
-    el.setAttribute('ondragstart', 'drag(event)');
-    el.setAttribute('ondragenter', 'dragEnter(event)');
-
+    
+    setElementListeners(el);
     getContainer().appendChild(el);
-
     saveState();
 }
 
@@ -34,7 +41,6 @@ function drop(e) {
 
     const id = e.dataTransfer.getData('text/plain');
     const el = document.getElementById(id);
-
     const marker = findMarker();
 
     if (marker) {
@@ -43,9 +49,8 @@ function drop(e) {
         getContainer().appendChild(el);
     }
 
-    saveState();
-
     removeMarkers();
+    saveState();
 }
 
 function dragEnter(e) {
@@ -56,8 +61,9 @@ function dragEnter(e) {
     insertMarker(e.target);
 }
 
-function enableDrop(e) {
+function containerDragOver(e) {
     e.preventDefault();
+    calcMouseDirection(e);
 }
 
 function readState() {
@@ -65,6 +71,13 @@ function readState() {
 
     if (!items) {
         console.log('Saved state not found.');
+
+        const elements = getElements(getContainer());
+
+        for (const index in elements) {
+            setElementListeners(elements[index]);
+        }
+
         return;
     }
 
@@ -72,7 +85,7 @@ function readState() {
 
     let container = document.createElement('div');
     container.className = 'items';
-    container.setAttribute('ondragover', 'enableDrop(event)');
+    container.setAttribute('ondragover', 'containerDragOver(event)');
     container.setAttribute('ondrop', 'drop(event)');
 
     for (const item in parsedItems) {
@@ -120,6 +133,8 @@ function unserializeElement(object) {
         el.setAttribute(prop, object[prop]);
     }
 
+    setElementListeners(el);
+
     return el;
 }
 
@@ -151,7 +166,12 @@ function insertMarker(target) {
     let marker = document.createElement('span');
     marker.className = 'marker';
 
-    getContainer().insertBefore(marker, target);
+    if (mouseDir === DIR_DOWN) {
+        insertAfter(getContainer(), marker, target);
+    } else {
+        getContainer().insertBefore(marker, target);
+    }
+    
 }
 
 function removeMarkers() {
@@ -159,5 +179,51 @@ function removeMarkers() {
 
     for (var i = 0; i < markers.length; i++) {
         markers[i].remove();
+    }
+}
+
+// insertAfter workaround as it's not yet supported
+function insertAfter(container, marker, target) {
+    const next = target.nextSibling;
+
+    if (next) {
+        container.insertBefore(marker, next);
+    } else {
+        container.appendChild(marker);
+    }
+}
+
+function setElementListeners(el) {
+    el.addEventListener('dragstart', drag);
+    el.addEventListener('dragenter', dragEnter);
+    el.addEventListener('dragover', throttle(100, calcMouseDirection));
+}
+
+function calcMouseDirection(e) {
+    const diff = e.y - mouseYValue;
+    mouseYValue = e.y;
+
+    if (diff > 0) {
+        mouseDir = DIR_DOWN;
+    } else if (diff < 0) {
+        mouseDir = DIR_UP;
+    }
+
+    console.log(mouseDir);
+}
+
+function throttle(delay, handler) {
+    let lastCall = 0;
+
+    return function(...args) {
+        const now = (new Date()).getTime();
+
+        if (now - lastCall < delay) {
+            return
+        }
+
+        lastCall = now;
+
+        return handler(...args);
     }
 }
